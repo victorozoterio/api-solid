@@ -1,2 +1,9 @@
 node_modules
 build
+/generated/prisma
+
+# Environments
+.env
+.env.dev
+.env.hml
+.env.prd
