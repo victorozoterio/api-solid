@@ -1,6 +1,6 @@
 import { expect, describe, it, beforeEach } from "vitest";
 import { InMemoryUsersRepository } from "@/repositories/in-memory/in-memory-users.repository";
-import { AuthenticateUseCase } from "./authenticate";
+import { AuthenticateUseCase } from "./authenticate.usecase";
 import { hash } from "bcryptjs";
 import { InvalidCredentialsError } from "./errors/invalid-credentials.error";
 
@@ -13,6 +13,7 @@ describe("Authenticate Use Case", () => {
     usersRepository = new InMemoryUsersRepository();
     sut = new AuthenticateUseCase(usersRepository); // system under test
   });
+
   it("should be able to authenticate", async () => {
     await usersRepository.create({
       name: "John Doe",
