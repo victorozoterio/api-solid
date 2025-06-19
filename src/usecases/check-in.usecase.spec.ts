@@ -3,6 +3,8 @@ import { InMemoryCheckInsRepository } from "@/repositories/in-memory/in-memory-c
 import { CheckInUseCase } from "./check-in.usecase";
 import { InMemoryGymsRepository } from "@/repositories/in-memory/in-memory-gyms.repository";
 import { Decimal } from "generated/prisma/runtime/library";
+import { MaxNumberOfCheckInsError } from "./errors/max-number-of-check-ins.error";
+import { MaxDistanceError } from "./errors/max-distance.error";
 
 let checkInsRepository: InMemoryCheckInsRepository;
 let gymsRepository: InMemoryGymsRepository;
@@ -10,18 +12,18 @@ let sut: CheckInUseCase;
 
 describe("Check-in Use Case", () => {
   // Recria as variáveis em memória antes de cada um dos teste
-  beforeEach(() => {
+  beforeEach(async () => {
     checkInsRepository = new InMemoryCheckInsRepository();
     gymsRepository = new InMemoryGymsRepository();
     sut = new CheckInUseCase(checkInsRepository, gymsRepository); // system under test
 
-    gymsRepository.items.push({
+    await gymsRepository.create({
       id: "gym-01",
       title: "JavaScript Gym",
       description: "",
       phone: "",
-      latitude: new Decimal(-23.0719488),
-      longitude: new Decimal(-47.2088576),
+      latitude: -23.0719488,
+      longitude: -47.2088576,
     });
 
     vi.useFakeTimers();
@@ -59,7 +61,7 @@ describe("Check-in Use Case", () => {
         userLatitude: -23.0719488,
         userLongitude: -47.2088576,
       }),
-    ).rejects.toBeInstanceOf(Error);
+    ).rejects.toBeInstanceOf(MaxNumberOfCheckInsError);
   });
 
   it("should be able to check in twice but in different days", async () => {
@@ -101,6 +103,6 @@ describe("Check-in Use Case", () => {
         userLatitude: -23.0719488,
         userLongitude: -47.2088576,
       }),
-    ).rejects.toBeInstanceOf(Error);
+    ).rejects.toBeInstanceOf(MaxDistanceError);
   });
 });
